@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HenryNguyen5/ipfsTestSite.git"
+    "url": "git+https://github.com/aitrean/OrbStorj.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/HenryNguyen5/ipfsTestSite/issues"
+    "url": "https://github.com/aitrean/OrbStorj/issues"
   },
-  "homepage": "https://github.com/HenryNguyen5/ipfsTestSite#readme",
+  "homepage": "https://github.com/aitrean/OrbStorj#readme",
   "devDependencies": {
     "babel-core": "^6.18.2",
     "babel-loader": "^6.2.8",
