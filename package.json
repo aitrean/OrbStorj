@@ -17,19 +17,10 @@
   },
   "homepage": "https://github.com/aitrean/OrbStorj#readme",
   "devDependencies": {
-    "babel-core": "^6.18.2",
-    "babel-loader": "^6.2.8",
-    "babel-plugin-syntax-async-functions": "^6.13.0",
-    "babel-plugin-transform-regenerator": "^6.16.1",
-    "babel-preset-es2015": "^6.18.0",
     "chokidar": "^1.6.1",
     "eslint": "^3.11.0",
-    "eslint-config-google": "^0.7.1",
-    "eslint-loader": "^1.6.1",
     "eslint-plugin-no-async-without-await": "^1.2.0",
-    "json-loader": "^0.5.4",
-    "node-libs-browser": "^2.0.0",
-    "webpack": "^1.13.3"
+    "node-libs-browser": "^2.0.0"
   },
   "dependencies": {
     "electron": "^1.4.10",
