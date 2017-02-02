@@ -1,6 +1,6 @@
 **TODO:**
 
-#PROTOTYPE PHASE 1:
+#PROTOTYPE 1:
 ##Implement basic CLI for interfacing between your database, your computer, and sharing files with other users.
 
 ##Implement directory sharing between two users
