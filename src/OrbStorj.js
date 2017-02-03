@@ -1,15 +1,20 @@
 'use strict';
 
+const menu = require('./lib/consoleMenu');
 const orbitdb = require('./lib/orbitHandler');
 const fs = require('fs');
 
-
-const start = async function start() {
+async function start() {
 	await orbitdb.init('myApp');
-	let myDb = await orbitdb.mkDB(['begin', 'here'], 'kvstore');
-	return myDb;
-};
-//start();
+	let action = await menu.openingMenu();
+	switch (action.type) {
+		case ('launchDefaultDatabaseConnection'):
+			return await orbitdb.mkDB([action.data, 'type'], 'kvstore');
+		default:
+			break;
+	}
+}
+
 start().then((db) => {
 	const testFile = function testFile() {
 		fs.readFile('./as1.pdf', async(err, data) => {
@@ -26,15 +31,11 @@ start().then((db) => {
 
 
 		});
-
-	}
+	};
 
 	const testFile1 = function testFile() {
 
 	};
-
-
-
 	testFile();
 	testFile1();
 
