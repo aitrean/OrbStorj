@@ -1,20 +1,30 @@
-const orbitdb = require('orbitHandler')
-//make a new db for each field created
-const createField = async(fieldName) => {
-    return await orbitdb.mkDB(fieldName, 'kvstore');
+//const orbitdb = require('orbitHandler');
+const fs = require('fs');
+
+const readFile = function readFile(fileName) {
+	return new Promise((resolve, reject) => {
+		fs.readFile(fileName, (err, data) => {
+			if (err) {
+				return reject(err);
+			}
+			return resolve(data);
+		});
+	});
 };
 
-const createProject = async(db, projectObj) => {
-    await db.put(projectObj.name, projectObj.structure)
-}
+const writeFile = function writeFile(fileName, data) {
+	return new Promise((resolve, reject) => {
+		fs.writeFile(fileName, data, (err) => {
+			if (err) {
+				return reject(err);
+			}
+			return resolve();
+		});
+	});
+};
 
-const saveProject = async(db, projectObj) => {
-    await db.set(projectObj)
-}
-const getProject = (db, projectName) => {
-    return db.get(projectName);
-}
 
-const getFile = (project, filePath) => {
-  return project.structure.filePath;
-}
+module.export({
+	readFile,
+	writeFile,
+});

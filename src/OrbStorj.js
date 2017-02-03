@@ -2,44 +2,41 @@
 
 const menu = require('./lib/consoleMenu');
 const orbitdb = require('./lib/orbitHandler');
-const fs = require('fs');
+const fsAsync = require('./lib/fileHandler');
+let db;
+let ipfs;
 
-async function start() {
-	await orbitdb.init('myApp');
+const start = async function start() {
+	ipfs = await orbitdb.init('myApp');
 	let action = await menu.openingMenu();
 	switch (action.type) {
 		case ('launchDefaultDatabaseConnection'):
-			return await orbitdb.mkDB([action.data, 'type'], 'kvstore');
+			db = await orbitdb.mkDB([action.data, 'type'], 'kvstore');
+			break;
 		default:
 			break;
 	}
-}
+};
 
-start().then((db) => {
-	const testFile = function testFile() {
-		fs.readFile('./as1.pdf', async(err, data) => {
-			if (err) console.log(err);
+const main = async function () {
+	await start();
+
+	const testFile = async function testFile() {
+		try {
+			let data = await fsAsync.readFile('as1.pdf');
 			await db.put('testPDF1', data);
 			console.log(data);
 			let file = db.get('testPDF');
 			let c = new Buffer(file.data);
 			console.log(c);
 
-			fs.writeFile('success1.pdf', c, (err) => {
-				if (err) console.log(err);
-			});
-
-
-		});
+			await fsAsync.writeFile('success.pdf', c);
+		} catch (e) {
+			console.log(e);
+		}
 	};
 
-	const testFile1 = function testFile() {
-
-	};
 	testFile();
-	testFile1();
+};
 
-
-}).catch((err) => {
-	console.log(err);
-});
+main();

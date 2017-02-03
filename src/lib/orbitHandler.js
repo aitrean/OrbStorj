@@ -9,26 +9,26 @@ let appName;
  * @return {null}      none
  */
 const init = (name) => {
-    appName = name;
-    const ipfsOptions = {
-        IpfsDataDir: '/tmp/' + appName,
-        Addresses: {
-            API: '/ip4/127.0.0.1/tcp/0',
-            Swarm: ['/ip4/0.0.0.0/tcp/0'],
-            Gateway: '/ip4/0.0.0.0/tcp/0',
-        },
-    };
+	appName = name;
+	const ipfsOptions = {
+		IpfsDataDir: '/tmp/' + appName,
+		Addresses: {
+			API: '/ip4/127.0.0.1/tcp/0',
+			Swarm: ['/ip4/0.0.0.0/tcp/0'],
+			Gateway: '/ip4/0.0.0.0/tcp/0',
+		},
+	};
 
-    ipfs = new IPFS(ipfsOptions);
-    console.log("")
-    return new Promise((resolve, reject) => {
-        ipfs.on('ready', () => {
-            resolve()
-        });
-        ipfs.on('error', (e) => {
-            reject(e)
-        });
-    });
+	ipfs = new IPFS(ipfsOptions);
+
+	return new Promise((resolve, reject) => {
+		ipfs.on('ready', () => {
+			return resolve(ipfs);
+		});
+		ipfs.on('error', (e) => {
+			return reject(e);
+		});
+	});
 };
 
 /**
@@ -39,21 +39,21 @@ const init = (name) => {
  */
 const mkDB = (name, type) => {
 
-    //concatenate name into string
-    name = name.join('.');
+	//concatenate name into string
+	name = name.join('.');
 
-    return new Promise((resolve, reject) => {
-        const orbitdb = new OrbitDB(ipfs, appName);
-        const db = orbitdb[type](`${appName}.${name}`);
-        db.events.on('ready', () => {
-            resolve(db);
-        });
-    });
+	return new Promise((resolve, reject) => {
+		const orbitdb = new OrbitDB(ipfs, appName);
+		const db = orbitdb[type](`${appName}.${name}`);
+		db.events.on('ready', () => {
+			return resolve(db);
+		});
+	});
 }
 
 const exportObj = {
-    init: init,
-    mkDB: mkDB,
+	init: init,
+	mkDB: mkDB,
 };
 
 module.exports = exportObj;
