@@ -8,7 +8,9 @@
   An action can be [moved\*, deleted, added, updated\*]
   
   \*moving also counts as renaming, if file is moved out of root, treat as deletion
+  
   \*We can treat updated as added to simplify operations
+  
           ```
           {
             currentIteration: <number>++
@@ -20,6 +22,7 @@
             ]
           }
           ```
+          
   By always using absolute path, we can avoid differences between files and directories
 
 ##Treating different actions
@@ -33,6 +36,7 @@
   This is when we will use orbitdb.kvstore to keep track of our files inside IPFS.
   
   Below is a sample file entry. Adding directories just adds all files inside the directory
+  
   ```
   {'absolute/path/to/file' : 'IPFS hash'}
   ```
@@ -49,6 +53,7 @@
   1. Adding single file:
     Add file to IPFS
     create an entry in kvstore
+    
     ```
     {'absolute/path/to/file' : 'IPFS hash'}`
     Create new entry in eventlog:
@@ -60,15 +65,19 @@
       ]
     }
     ```
+    
   2. Adding a directory:
      Add dir to IPFS
      create multiple flat mapped entries in kvstore
+     
      ```
       {'absolute/path/to/file1' : 'IPFS hash1'}
       {'absolute/path/to/file2' : 'IPFS hash2'}
       {'absolute/path/to/file3' : 'IPFS hash3'}
      ```
+     
      create new entry in eventlog :
+     
      ```
      {
        currentIteration: <number>++
@@ -80,5 +89,6 @@
        ]
      }
      ```
+     
   3. Deletion does the exact opposite of addition with one extra step:
       Remove all related entries in kvstore via mapping from eventlog
