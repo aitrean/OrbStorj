@@ -4,9 +4,9 @@
   We create a new database specifically for tracking changes to root.
   This will be a orbitdb.eventlog database (append only)
   Every new transaction (ex. adding a folder/files) results in an entry to this db.
-  An action can be [moved*, deleted, added, updated*]
-  *moving also counts as renaming, if file is moved out of root, treat as deletion*
-  *We can treat updated as added to simplify operations*
+  An action can be [moved\*, deleted, added, updated\*]
+  \*moving also counts as renaming, if file is moved out of root, treat as deletion
+  \*We can treat updated as added to simplify operations
           `{
             currentIteration: <number>++
             action: 'add'
