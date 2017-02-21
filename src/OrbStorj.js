@@ -17,8 +17,7 @@ const start = async function start() {
 			break;
 	}
 };
-
-const main = async function () {
+const main = async function (asd, asw) {
 	await start();
 
 	const testFile = async function testFile() {

@@ -17,12 +17,12 @@
   },
   "homepage": "https://github.com/aitrean/OrbStorj#readme",
   "devDependencies": {
-    "chokidar": "^1.6.1",
     "eslint": "^3.11.0",
     "eslint-plugin-no-async-without-await": "^1.2.0",
     "node-libs-browser": "^2.0.0"
   },
   "dependencies": {
+    "chokidar": "^1.6.1",
     "clui": "^0.3.1",
     "electron": "^1.4.10",
     "ipfs-daemon": "^0.3.0-beta.3",
