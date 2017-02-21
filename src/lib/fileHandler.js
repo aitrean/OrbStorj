@@ -24,7 +24,7 @@ const writeFile = function writeFile(fileName, data) {
 };
 
 
-module.export({
+module.export = {
 	readFile,
 	writeFile,
-});
+};
