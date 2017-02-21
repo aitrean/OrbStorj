@@ -6,6 +6,7 @@
   This will be a orbitdb.eventlog database (append only)
   Every new transaction (ex. adding a folder/files) results in an entry to this db.
   An action can be [moved\*, deleted, added, updated\*]
+  
   \*moving also counts as renaming, if file is moved out of root, treat as deletion
   \*We can treat updated as added to simplify operations
           ```
@@ -30,6 +31,7 @@
 ###Synchronizing additions and deletions
   To handle syncing of additions and deletions, we need another database specifically for this purpose.
   This is when we will use orbitdb.kvstore to keep track of our files inside IPFS.
+  
   Below is a sample file entry. Adding directories just adds all files inside the directory
   ```
   {'absolute/path/to/file' : 'IPFS hash'}
