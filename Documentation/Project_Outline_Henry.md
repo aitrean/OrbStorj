@@ -11,17 +11,17 @@
   
   \*We can treat updated as added to simplify operations
   
-          ```
-          {
-            currentIteration: <number>++
-            action: 'add'
-            files: [
-              '/absolute/path/to/file',
-              '/absolute/path/to/file',
-              '/absolute/path/to/file'
-            ]
-          }
-          ```
+  ```
+  {
+    currentIteration: <number>++
+    action: 'add'
+    files: [
+      '/absolute/path/to/file',
+      '/absolute/path/to/file',
+      '/absolute/path/to/file'
+    ]
+  }
+  ```
           
   By always using absolute path, we can avoid differences between files and directories
 
