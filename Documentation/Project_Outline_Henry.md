@@ -1,16 +1,16 @@
 #Implementing addition of files and directories
   The metadata of all files and directories will be stored in a JSON file
   called orbstorj.json
-  
+
   We create a new database specifically for tracking changes to root.
   This will be a orbitdb.eventlog database (append only)
   Every new transaction (ex. adding a folder/files) results in an entry to this db.
   An action can be [moved\*, deleted, added, updated\*]
-  
+
   \*moving also counts as renaming, if file is moved out of root, treat as deletion
-  
+
   \*We can treat updated as added to simplify operations
-  
+
   ```
   {
     currentIteration: <number>++
@@ -22,7 +22,7 @@
     ]
   }
   ```
-          
+
   By always using absolute path, we can avoid differences between files and directories
 
 ##Treating different actions
@@ -34,9 +34,9 @@
 ###Synchronizing additions and deletions
   To handle syncing of additions and deletions, we need another database specifically for this purpose.
   This is when we will use orbitdb.kvstore to keep track of our files inside IPFS.
-  
+
   Below is a sample file entry. Adding directories just adds all files inside the directory
-  
+
   ```
   {'absolute/path/to/file' : 'IPFS hash'}
   ```
@@ -53,7 +53,7 @@
   1. Adding single file:
     Add file to IPFS
     create an entry in kvstore
-    
+
     ```
     {'absolute/path/to/file' : 'IPFS hash'}`
     Create new entry in eventlog:
@@ -65,19 +65,19 @@
       ]
     }
     ```
-    
+
   2. Adding a directory:
      Add dir to IPFS
      create multiple flat mapped entries in kvstore
-     
+
      ```
       {'absolute/path/to/file1' : 'IPFS hash1'}
       {'absolute/path/to/file2' : 'IPFS hash2'}
       {'absolute/path/to/file3' : 'IPFS hash3'}
      ```
-     
+
      create new entry in eventlog :
-     
+
      ```
      {
        currentIteration: <number>++
@@ -89,6 +89,28 @@
        ]
      }
      ```
-     
+
   3. Deletion does the exact opposite of addition with one extra step:
       Remove all related entries in kvstore via mapping from eventlog
+
+#File watching implementation using Chokidar
+  There are multiple sync cases we need to handle:
+
+  1. Initial startup sync
+    - How do we handle the case when user is modifying/adding/deleting files
+        when the root is still being synchronized?
+    - The problem lies within the watch -> action -> ipfs/orbitdb/sync loop
+    - We have to somehow disable the file watch when an file is being synced
+
+  2. Sync happening when app is currently running
+    - How do we handle syncing after initial sync?
+
+## Current solution
+  1. If a file is about to be added/synced, ignore its 'add' event from chokidar
+  by checking the file path, this way we avoid looping
+  2. Treat file changes as adds
+  3. When a file is currently being synced, append some id such as {syncing-in-prog}-filename.txt
+  4. (?) Put a lock on the currently syncing file to prevent programs from corrupting it
+  5. (?) Do a hash check on synced file vs hash in db to make sure its not corrupted
+
+#Todo: compression

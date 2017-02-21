@@ -17,25 +17,8 @@ const start = async function start() {
 			break;
 	}
 };
-const main = async function (asd, asw) {
+const main = async function () {
 	await start();
-
-	const testFile = async function testFile() {
-		try {
-			let data = await fsAsync.readFile('as1.pdf');
-			await db.put('testPDF1', data);
-			console.log(data);
-			let file = db.get('testPDF');
-			let c = new Buffer(file.data);
-			console.log(c);
-
-			await fsAsync.writeFile('success.pdf', c);
-		} catch (e) {
-			console.log(e);
-		}
-	};
-
-	testFile();
 };
 
 main();

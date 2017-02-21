@@ -22,12 +22,22 @@ const createMainDir = function createMainDir(os = 'linux', path = '~/OrbStorj') 
 
 const watchMainDir = function watchMainDir(os = 'linux', path = '~/OrbStorj', ignoreDotFiles = false) {
 	let watcher;
+	const awaitWriteFinish = {
+		//20 sec
+		stabilityThreshold: 20000
+	};
+
 	if (ignoreDotFiles) {
 		watcher = chokidar.watch(path, {
-			ignored: /^(|[\/\\])\../
+			ignored: /^(|[\/\\])\../,
+			awaitWriteFinish,
+			ignoreInitial: true
 		});
 	} else {
-		watcher = chokidar.watch(path);
+		watcher = chokidar.watch(path,{
+			awaitWriteFinish,
+			ignoreInitial: true,
+		});
 	}
 	return watcher;
 };
