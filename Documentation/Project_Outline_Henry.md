@@ -1,6 +1,7 @@
 #Implementing addition of files and directories
   The metadata of all files and directories will be stored in a JSON file
   called orbstorj.json
+  
   We create a new database specifically for tracking changes to root.
   This will be a orbitdb.eventlog database (append only)
   Every new transaction (ex. adding a folder/files) results in an entry to this db.
