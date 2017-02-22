@@ -113,4 +113,6 @@
   5. (?) Put a lock on the currently syncing file to prevent programs from corrupting it
   6. (?) Do a hash check on synced file vs hash in db to make sure its not corrupted
 
+#Additional sync scenarios
+ 1. When syncing an 'add/move/delete/update' action, the file path may not exist in the kvstore if it was deleted or moved in a future date, we should safely ignore this case and continue to the next item to sync, this way we avoid syncing some unnecessary data
 #Todo: compression
