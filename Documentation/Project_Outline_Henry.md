@@ -106,11 +106,11 @@
     - How do we handle syncing after initial sync?
 
 ## Current solution
-  1. If a file is about to be added/synced, ignore its 'add' event from chokidar
-  by checking the file path, this way we avoid looping
-  2. Treat file changes as adds
-  3. When a file is currently being synced, append some id such as {syncing-in-prog}-filename.txt
-  4. (?) Put a lock on the currently syncing file to prevent programs from corrupting it
-  5. (?) Do a hash check on synced file vs hash in db to make sure its not corrupted
+  1. If a file is about to be added/synced, ignore its 'add' event from chokidar by checking the file path, this way we avoid looping
+  2. We can do this by checking the kvstore with the file path to determine if it is a file that is being synced, or if its a file that the user added to FS (distinguishing between a SYNC or an ADD)
+  3. Treat file changes as adds
+  4. When a file is currently being synced, append some id such as {syncing-in-prog}-filename.txt
+  5. (?) Put a lock on the currently syncing file to prevent programs from corrupting it
+  6. (?) Do a hash check on synced file vs hash in db to make sure its not corrupted
 
 #Todo: compression
