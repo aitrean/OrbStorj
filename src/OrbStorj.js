@@ -2,23 +2,32 @@
 
 const menu = require('./lib/consoleMenu');
 const orbitdb = require('./lib/orbitHandler');
-const fsAsync = require('./lib/fileHandler');
 let db;
 let ipfs;
 
 const start = async function start() {
-	ipfs = await orbitdb.init('myApp');
-	let action = await menu.openingMenu();
-	switch (action.type) {
-		case ('launchDefaultDatabaseConnection'):
-			db = await orbitdb.mkDB([action.data, 'type'], 'kvstore');
-			break;
-		default:
-			break;
+	try {
+		let action = await menu.openingMenu();
+		switch (action.type) {
+			case ('launchDefaultDatabaseConnection'):
+				ipfs = await orbitdb.init('myApp');
+				db = await orbitdb.mkDB([action.data, 'type'], 'kvstore');
+				break;
+			case ('launchDatabaseConnection'):
+				ipfs = await orbitdb.init(action.data);
+				db = await orbitdb.mkDB([action.data, 'type'], 'kvstore');
+				break;
+			default:
+				break;
+		}
+	} catch (err) {
+		console.log(err);
 	}
 };
-const main = async function () {
+
+const main = async function() {
 	await start();
 };
 
 main();
+
