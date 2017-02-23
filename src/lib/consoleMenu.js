@@ -1,4 +1,5 @@
 const minimist = require('minimist');
+const inquirer = require('inquirer-promise');
 const package = require('../../package.json');
 
 /**
@@ -18,35 +19,63 @@ const openingMenu = () => {
 			console.log('version		Displays version of OrbStorj');
 			console.log('help		Displays list of commands that operate with OrbStorj');
 			console.log('launch		launch into the given database, if no database given, launch default');
+			console.log('create		Create new database connection');
 			resolve();
 		} else if (argv.launch) {
-			console.log('Launching...');
+			console.log('Launching default database');
 			resolve(launchMenu(argv));
+		} else if (argv.create) {
+			resolve({
+				type: 'createDatabaseConnection',
+				data: {}
+			});
 		} else {
 			reject('Could not read that command, see --help for more details');
 		}
 	});
 };
 
-//TODO: implement menu for user input
-
+//TODO REWORK THIS FUNCTION
 const launchMenu = (argv) => {
 	if (argv.launch === true) {
 		return ({
 			type: 'launchDefaultDatabaseConnection',
 			data: {}
 		});
-	} else {
-		return ({
-			type: 'launchDatabaseConnection',
-			data: argv.launch
+	} else {}
+	return ({
+		type: 'launchDatabaseConnection',
+		data: argv.launch
+	});
+};
+
+const getDatabaseInfo = () => {
+	return new Promise((resolve, reject) => {
+		inquirer.prompt([{
+				type: 'input',
+				name: 'hash',
+				message: 'Please paste the hash for the new database connection: '
+			},
+			{
+				type: 'input',
+				name: 'name',
+				message: 'Please enter the name of this connection'
+			}
+		]).then(data => {
+			if (data.hash.length === 0) {
+				reject('ERROR: Hash value could not be resolved');
+			} else if (data.name.length === 0) {
+				reject('ERROR:  Name could not be resolved');
+			} else {
+				resolve(data);
+			}
 		});
-	}
+	});
 };
 
 const exportObj = {
-	openingMenu: openingMenu
+	openingMenu: openingMenu,
+	getDatabaseInfo: getDatabaseInfo,
 };
 
 module.exports = exportObj;
-
