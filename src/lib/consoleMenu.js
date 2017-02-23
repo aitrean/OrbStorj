@@ -35,7 +35,6 @@ const openingMenu = () => {
 	});
 };
 
-//TODO REWORK THIS FUNCTION
 const launchMenu = (argv) => {
 	if (argv.launch === true) {
 		return ({
