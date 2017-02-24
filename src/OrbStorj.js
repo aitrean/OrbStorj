@@ -57,6 +57,13 @@ const start = async function start() {
 const main = async function() {
 	try {
 		await start();
+		setInterval(async() => {
+			let peers = await ipfs.swarm.peers();
+			peers.map((e) => {
+
+				console.log(String(e.addr));
+			});
+		}, 1000);
 		watcher.on('addDir', (path) => {
 			console.log(`${path} has been added (dir)`);
 		});
