@@ -91,7 +91,7 @@
      ```
 
   3. Deletion does the exact opposite of addition with one extra step:
-      Remove all related entries in kvstore via mapping from eventlog
+      Mark all related entries in kvstore as DELETED as an object property
 
 #File watching implementation using Chokidar
   There are multiple sync cases we need to handle:
@@ -107,7 +107,7 @@
 
 ## Current solution
   1. If a file is about to be added/synced, ignore its 'add' event from chokidar by checking the file path, this way we avoid looping
-  2. We can do this by checking the kvstore with the file path to determine if it is a file that is being synced, or if its a file that the user added to FS (distinguishing between a SYNC or an ADD)
+  2. We can do this by checking the kvstore with the file path to determine if it is a file that is being synced, or if its a file that the user added to FS (distinguishing between a SYNC or an ADD). Also, we need to check if it was deleted at a future date.
   3. Treat file changes as adds
   4. When a file is currently being synced, append some id such as {syncing-in-prog}-filename.txt
   5. (?) Put a lock on the currently syncing file to prevent programs from corrupting it
