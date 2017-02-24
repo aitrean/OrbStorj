@@ -47,7 +47,7 @@ const mkDB = (name, type) => {
 	//concatenate name into string
 	name = name.join('.');
 	return new Promise((resolve, reject) => {
-		const db = orbitdb[type](`${appName}.${name}`);
+		const db = orbitdb[type](`${appName}.${name}.${type}`);
 		db.events.on('ready', () => {
 			return resolve(db);
 		});

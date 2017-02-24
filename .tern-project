@@ -1,5 +1,5 @@
 {
-  "ecmaVersion": 7,
+  "ecmaVersion": 8,
   "libs": [],
   "plugins": {
     "complete_strings": {

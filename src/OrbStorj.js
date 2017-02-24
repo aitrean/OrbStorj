@@ -3,7 +3,9 @@
 const menu = require('./lib/consoleMenu');
 const orbitdb = require('./lib/orbitHandler');
 const fh = require('./lib/fileHandler');
+const eventify = require('./lib/eventify');
 const dirty = require('dirty');
+
 let kvdb;
 let evdb;
 let orb;
@@ -53,9 +55,9 @@ const start = async function start() {
 
 
 const main = async function() {
-	try{
+	try {
 		await start();
-		watcher.on('addDir', (path) =>{
+		watcher.on('addDir', (path) => {
 			console.log(`${path} has been added (dir)`);
 		});
 
@@ -64,16 +66,33 @@ const main = async function() {
 
 		orb.events.on('data', (dbname, event) => {
 			console.log('\n\nORBITDB EVENT');
-			console.log(JSON.stringify(dbname), JSON.stringify(event));
+			console.log(dbname, event);
+
 			console.log('\n\n');
 		});
-	}catch(err){
+
+		/*
+		eventify.prmify([{
+			event: orb.events,
+			type: 'data'
+		}], (res) => {
+			console.log('FIRED');
+			console.log(JSON.stringify(res, null, 2));
+		});
+		 */
+
+
+
+
+	} catch (err) {
 		console.log(err);
 	}
 };
 main();
 
+const syncAdd = async function syncAdd(args) {
 
+};
 const addFile = async function addFile(path) {
 	console.log(`${path} has been added`);
 	//check if file already exists in kvstore
@@ -126,7 +145,7 @@ const addToevdb = async function addToevdb(path) {
 		action: 'add',
 		files: [path],
 	};
-	let evEntry = JSON.stringify(new orbitdb.EvObj(data));
+	let evEntry = JSON.stringify(new orbitdb.EvObj(data), null, 2);
 	console.log(`Adding ${evEntry} inside evdb`);
 	return await evdb.add(evEntry);
 };
@@ -134,8 +153,8 @@ const addToevdb = async function addToevdb(path) {
 const addTokvdb = async function addTokvdb(path) {
 	let fileAdded = await addToIpfs(path);
 	console.log(fileAdded);
-	let kvEntry = JSON.stringify(new orbitdb.KvObj(fileAdded));
+	let kvEntry = JSON.stringify(new orbitdb.KvObj(fileAdded), null, 2);
 	console.log(kvEntry);
-	console.log(`Putting ${JSON.stringify(kvEntry)} inside kvdb`);
-	return await kvdb.put(kvEntry);
+	console.log(`Putting ${kvEntry} inside kvdb`);
+	return await kvdb.put(path, kvEntry);
 };
