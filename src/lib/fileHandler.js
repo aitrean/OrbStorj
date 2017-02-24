@@ -1,33 +1,36 @@
 const fs = require('fs');
+const os = require('os');
 const chokidar = require('chokidar');
 /*
 	This file explictly only handles FS type actions
 	IPFS file actions should be in a seperate file
 	Then a third file should combine functionality between the two
 */
-const createMainDir = function createMainDir(os = 'linux', path = '~/OrbStorj') {
+const createMainDir = function createMainDir(path = `${os.homedir()}/OrbStorj`) {
 	return new Promise((resolve, reject) => {
 		fs.mkdir(path, (err) => {
 			//check if err is that folder already exists
 			if (err) {
-				if (err === 'EEXIST') {
+				if (err.code === 'EEXIST') {
 					console.log(`${path} already exists, skipping creation`);
-					resolve();
+					return resolve();
 				} else {
-					const err = `Err: could not create folder at ${path}`;
-					reject(err);
+					const errorMsg = `Err: could not create folder at ${path}`;
+					console.log(err);
+					return reject(errorMsg);
 				}
-				resolve();
 			}
+			console.log(`successfully created path at ${path}`);
+			return resolve();
 		});
 	});
 };
 
-const watchMainDir = function watchMainDir(os = 'linux', path = '~/OrbStorj', ignoreDotFiles = false) {
+const watchMainDir = function watchMainDir(path = `${os.homedir()}/OrbStorj`, ignoreDotFiles = false) {
 	let watcher;
 	const awaitWriteFinish = {
 		//20 sec
-		stabilityThreshold: 20000
+		stabilityThreshold: 2000
 	};
 
 	if (ignoreDotFiles) {
@@ -42,6 +45,7 @@ const watchMainDir = function watchMainDir(os = 'linux', path = '~/OrbStorj', ig
 			ignoreInitial: true,
 		});
 	}
+	console.log(`watcher instantiated at ${path}`);
 	return watcher;
 };
 
@@ -117,8 +121,7 @@ const writeFileAsync = function writeFileAsync(fileName, data) {
 const moveFiles = function moveFiles(){
 
 };
-
-module.export = {
+const exportObj = {
 	init: createMainDir,
 	watchRoot: watchMainDir,
 	watchEvents: watchEvents,
@@ -128,3 +131,5 @@ module.export = {
 	writeFile: writeFileAsync,
 	mv: moveFiles,
 };
+
+module.exports = exportObj;
