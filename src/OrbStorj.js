@@ -111,10 +111,12 @@ const main = async function() {
 };
 main();
 
-const syncAdd = function syncAdd(files) {
+const syncAdd = async function syncAdd(files) {
 	for (let f of files) {
 		//if the file exists
-		if (fh.exists(f)) {
+		console.log(f);
+		console.log(await fh.exists(f));
+		if (await fh.exists(f)) {
 			console.log(`${f} already exists`);
 		} else {
 			console.log(`${f} does not exist, syncing to FS`);

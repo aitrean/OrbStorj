@@ -126,6 +126,7 @@ const writeFileAsync = function writeFileAsync(fileName, data) {
 };
 
 const fileExists = function fileExists(path) {
+	console.log(`Checking if ${orbStorjDir()}/${path} exists...`);
 	return new Promise((resolve)=> {
 		fs.access(`${orbStorjDir()}/${path}`, (err) => {
 			(err ? resolve(false) : resolve(true));
