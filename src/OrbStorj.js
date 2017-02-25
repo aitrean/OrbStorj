@@ -88,7 +88,7 @@ const main = async function() {
 
 		watcher.on('add', path => addFile(path));
 
-		watcher.on('unlink', path => removeFromIpfs(path));
+		watcher.on('unlink', path => removeFile(path));
 
 		evdb.events.on('data', (dbname, event) => {
 			console.log('\n EVDB EVENT');
@@ -99,6 +99,10 @@ const main = async function() {
 			switch (value.action) {
 				case 'add':
 					syncAdd(value.files);
+					break;
+
+				case 'remove':
+					syncDelete(value.files);
 					break;
 
 				default:
@@ -133,7 +137,7 @@ const syncAdd = async function syncAdd(files) {
 		//if the file exists
 		console.log(kvdb.get(f));
 		console.log(await fh.exists(f));
-		if (await fh.exists(f)) {
+		if (f.isDeleted === false && await fh.exists(f)) {
 			console.log(`${f} already exists`);
 		} else {
 			console.log(`${f} does not exist, syncing to FS`);
@@ -150,6 +154,13 @@ const syncAdd = async function syncAdd(files) {
 
 };
 
+const syncDelete = async function syncDelete(files) {
+	console.log('Syncing Delete...');
+	for (let f of files) {
+		console.log(kvdb.get(f));
+	}
+};
+
 const addFile = async function addFile(path) {
 	console.log(`${path} has been added`);
 	//check if file already exists in kvstore
@@ -163,7 +174,7 @@ const addFile = async function addFile(path) {
 	console.log(`File ${path} does not exist in kvdb, adding`);
 	try {
 		await addTokvdb(path);
-		await addToevdb(path);
+		await updateEvdb(path, 'add');
 		console.log(`File ${path} successfully added!`);
 	} catch (err) {
 		console.log(err);
@@ -191,8 +202,11 @@ const addToIpfs = function addToIpfs(path) {
 	});
 };
 
-const removeFromIpfs = function removeFromIpfs(path) {
+//prime the kvdb and eventdb before synchronization
+const removeFile = function removeFile(path) {
 	console.log('Testing delete...');
+	markDeleted(path);
+	updateEvdb(path, 'remove');
 };
 
 const getFromIpfs = function getFromIpfs(path, hash) {
@@ -209,7 +223,7 @@ const getFromIpfs = function getFromIpfs(path, hash) {
 	});
 };
 
-const addToevdb = async function addToevdb(path) {
+const updateEvdb = async function updateEvdb(path, action) {
 	//get current iteration this user is at
 	const latestEntry = evdb.iterator({
 			limit: 1,
@@ -220,11 +234,11 @@ const addToevdb = async function addToevdb(path) {
 	console.log('Getting latest entry');
 	console.log(latestEntry);
 	let data = {
-		action: 'add',
+		action: action,
 		files: [path],
 	};
 	let evEntry = JSON.stringify(new orbitdb.EvObj(data), null, 2);
-	console.log(`Adding ${evEntry} inside evdb`);
+	console.log(action + 'ing' + '${evEntry} inside evdb');
 	return await evdb.add(evEntry);
 };
 
@@ -235,4 +249,11 @@ const addTokvdb = async function addTokvdb(path) {
 	console.log(kvEntry);
 	console.log(`Putting ${kvEntry} inside kvdb`);
 	return await kvdb.put(path, kvEntry);
+};
+
+const markDeleted = function markDeleted(path) {
+	let deletedFile = JSON.parse(kvdb.get(path));
+	deletedFile.isDeleted = true;
+	kvdb.set(path, deletedFile);
+	console.log(deletedFile);
 };
