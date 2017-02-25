@@ -22,8 +22,8 @@ const start = async function start() {
 			case ('launchDefaultDatabaseConnection'):
 				ipfs = await orbitdb.init('myApp');
 				orb = await orbitdb.initOrb();
-				kvdb = await orbitdb.mkDB('', 'kvstore');
-				evdb = await orbitdb.mkDB('', 'eventlog');
+				kvdb = await orbitdb.mkDB('default', 'kvstore');
+				evdb = await orbitdb.mkDB('default', 'eventlog');
 				break;
 
 			case ('launchDatabaseConnection'):
@@ -88,6 +88,8 @@ const main = async function() {
 
 		watcher.on('add', path => addFile(path));
 
+		watcher.on('unlink', path => removeFromIpfs(path));
+
 		evdb.events.on('data', (dbname, event) => {
 			console.log('\n EVDB EVENT');
 			console.log(dbname, event);
@@ -147,6 +149,7 @@ const syncAdd = async function syncAdd(files) {
 	}
 
 };
+
 const addFile = async function addFile(path) {
 	console.log(`${path} has been added`);
 	//check if file already exists in kvstore
@@ -186,6 +189,10 @@ const addToIpfs = function addToIpfs(path) {
 			}
 		});
 	});
+};
+
+const removeFromIpfs = function removeFromIpfs(path) {
+	console.log('Testing delete...');
 };
 
 const getFromIpfs = function getFromIpfs(path, hash) {
