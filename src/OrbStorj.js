@@ -114,13 +114,13 @@ main();
 const syncAdd = async function syncAdd(files) {
 	for (let f of files) {
 		//if the file exists
-		console.log(f);
+		console.log(kvdb.get(f));
 		console.log(await fh.exists(f));
 		if (await fh.exists(f)) {
 			console.log(`${f} already exists`);
 		} else {
 			console.log(`${f} does not exist, syncing to FS`);
-			let val = kvdb.get(f);
+			let val = JSON.parse(kvdb.get(f));
 			console.log(`got
 					Hash: ${val.hash} |
 					Path: ${val.path} |
@@ -135,12 +135,13 @@ const syncAdd = async function syncAdd(files) {
 const addFile = async function addFile(path) {
 	console.log(`${path} has been added`);
 	//check if file already exists in kvstore
+	/*
 	let fileExists = kvdb.get(path);
 
 	if (fileExists) {
 		console.log(`File ${path} already exists in kvdb or was deleted at a future time, ignoring add`);
 		return;
-	}
+	}*/
 
 	console.log(`File ${path} does not exist in kvdb, adding`);
 	try {
