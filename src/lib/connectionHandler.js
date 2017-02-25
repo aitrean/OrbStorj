@@ -25,7 +25,7 @@ const init = () => {
 
 const addEntry = (connectionInfo) => {
 	if (connectionInfo.hash.length != 34) {
-		console.log("That was not an appropriate string, enter again.");
+		console.log('That was not an appropriate string, enter again.');
 		return false;
 	} else if (localDatabase.get(connectionInfo.name)) {
 		console.log('There is already a connection string with that name, please choose another name');
@@ -40,7 +40,6 @@ const addEntry = (connectionInfo) => {
 
 const getConnectionList = () => {
 	let array = [];
-	let i = 0;
 	localDatabase.forEach(function(k, v) {
 		array.push({
 			'name': k,
@@ -50,10 +49,21 @@ const getConnectionList = () => {
 	return array;
 };
 
+const get = (key) => {
+	return new Promise((resolve, reject) => {
+		if (localDatabase.get(key) === undefined) {
+			reject('Could not find that connection name, terminating startup.');
+		} else {
+			resolve(localDatabase.get(key).hash);
+		}
+	});
+};
+
 const exportObj = {
 	init: init,
 	addEntry: addEntry,
-	getConnectionList: getConnectionList
+	getConnectionList: getConnectionList,
+	get: get
 };
 
 module.exports = exportObj;

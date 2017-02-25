@@ -31,8 +31,10 @@ const start = async function start() {
 					ipfs = await orbitdb.init(action.data);
 					orb = await orbitdb.initOrb();
 
-					kvdb = await orbitdb.mkDB(action.data, 'kvstore');
-					evdb = await orbitdb.mkDB(action.data, 'eventlog');
+					let connectionAddress = await dbRecord.get(action.data);
+
+					kvdb = await orbitdb.mkDB(connectionAddress, 'kvstore');
+					evdb = await orbitdb.mkDB(connectionAddress, 'eventlog');
 					break;
 				}
 
