@@ -20,14 +20,19 @@ const openingMenu = () => {
 			console.log('help		Displays list of commands that operate with OrbStorj');
 			console.log('launch		launch into the given database, if no database given, launch default');
 			console.log('create		Create new database connection');
+			console.log('list		List connection names');
 			resolve();
 		} else if (argv.launch) {
-			console.log('Launching default database');
+			console.log('Launching...');
 			resolve(launchMenu(argv));
 		} else if (argv.create) {
 			resolve({
 				type: 'createDatabaseConnection',
 				data: {}
+			});
+		} else if (argv.list) {
+			resolve({
+				type: 'listConnections'
 			});
 		} else {
 			reject('Could not read that command, see --help for more details');
@@ -41,11 +46,12 @@ const launchMenu = (argv) => {
 			type: 'launchDefaultDatabaseConnection',
 			data: {}
 		});
-	} else {}
-	return ({
-		type: 'launchDatabaseConnection',
-		data: argv.launch
-	});
+	} else {
+		return ({
+			type: 'launchDatabaseConnection',
+			data: argv.launch
+		});
+	}
 };
 
 const getDatabaseInfo = () => {
@@ -53,7 +59,7 @@ const getDatabaseInfo = () => {
 		inquirer.prompt([{
 				type: 'input',
 				name: 'hash',
-				message: 'Please paste the hash for the new database connection: '
+				message: 'Please paste the address for the new database connection: '
 			},
 			{
 				type: 'input',
@@ -72,9 +78,26 @@ const getDatabaseInfo = () => {
 	});
 };
 
+/*
+const selectConnection = (connectionList) => {
+	listConnections(connectionList);
+	inquirer.prompt([{
+		'type': rawlist,
+		'name': selectedConnection
+	}]);
+};*/
+
+const listConnections = (connectionList) => {
+	for (let i = 0; i < connectionList.length; i++) {
+		let str = (i + 1) + '. ' + connectionList[i].name + '\n' + '   Address: ' + connectionList[i].hash;
+		console.log(str);
+	}
+};
+
 const exportObj = {
 	openingMenu: openingMenu,
 	getDatabaseInfo: getDatabaseInfo,
+	listConnections: listConnections
 };
 
 module.exports = exportObj;

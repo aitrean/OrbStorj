@@ -4,16 +4,17 @@ const menu = require('./lib/consoleMenu');
 const orbitdb = require('./lib/orbitHandler');
 const fh = require('./lib/fileHandler');
 const eventify = require('./lib/eventify');
-const dirty = require('dirty');
+const dbRecord = require('./lib/connectionHandler');
+
 let kvdb;
 let evdb;
 let orb;
-let dbRecord;
 let ipfs;
 let watcher;
+
 const start = async function start() {
 	try {
-		dbRecord = dirty('./localkv.db');
+		await dbRecord.init();
 		let action = await menu.openingMenu();
 
 		switch (action.type) {
@@ -21,23 +22,36 @@ const start = async function start() {
 			case ('launchDefaultDatabaseConnection'):
 				ipfs = await orbitdb.init('myApp');
 				orb = await orbitdb.initOrb();
-				kvdb = await orbitdb.mkDB([JSON.stringify(action.data), action.type], 'kvstore');
-				evdb = await orbitdb.mkDB([JSON.stringify(action.data), action.type], 'eventlog');
+				kvdb = await orbitdb.mkDB('', 'kvstore');
+				evdb = await orbitdb.mkDB('', 'eventlog');
 				break;
 
 			case ('launchDatabaseConnection'):
-				ipfs = await orbitdb.init(action.data);
-				orb = await orbitdb.initOrb();
-				kvdb = await orbitdb.mkDB([JSON.stringify(action.data), action.type], 'kvstore');
-				evdb = await orbitdb.mkDB([JSON.stringify(action.data), action.type], 'eventlog');
-				break;
+				{
+					ipfs = await orbitdb.init(action.data);
+					orb = await orbitdb.initOrb();
+
+					kvdb = await orbitdb.mkDB(action.data, 'kvstore');
+					evdb = await orbitdb.mkDB(action.data, 'eventlog');
+					break;
+				}
 
 			case ('createDatabaseConnection'):
-				let newDatabaseInfo = await menu.getDatabaseInfo();
-				dbRecord.set(newDatabaseInfo.name, {
-					hash: newDatabaseInfo.hash
-				});
-				break;
+				{
+					let entrySuccessful;
+					let newDatabaseInfo;
+					while (entrySuccessful != true) {
+						newDatabaseInfo = await menu.getDatabaseInfo();
+						entrySuccessful = dbRecord.addEntry(newDatabaseInfo);
+					}
+					break;
+				}
+
+			case ('listConnections'):
+				{
+					menu.listConnections(dbRecord.getConnectionList());
+					break;
+				}
 
 			default:
 				break;
@@ -61,7 +75,6 @@ const main = async function() {
 		setInterval(async() => {
 			let peers = await ipfs.swarm.peers();
 			peers.map((e) => {
-
 				console.log(String(e.addr));
 			});
 		}, 1000);
@@ -137,7 +150,6 @@ const addFile = async function addFile(path) {
 	//check if file already exists in kvstore
 	/*
 	let fileExists = kvdb.get(path);
-
 	if (fileExists) {
 		console.log(`File ${path} already exists in kvdb or was deleted at a future time, ignoring add`);
 		return;
@@ -156,7 +168,10 @@ const addFile = async function addFile(path) {
 const addToIpfs = function addToIpfs(path) {
 	let rs = fh.readStream(path);
 	return new Promise((resolve, reject) => {
-		ipfs.files.add([{path: path, content: rs}], (err, res) => {
+		ipfs.files.add([{
+			path: path,
+			content: rs
+		}], (err, res) => {
 			if (err) {
 				console.log(`Error adding to ipfs ${err}`);
 				return reject(err);
