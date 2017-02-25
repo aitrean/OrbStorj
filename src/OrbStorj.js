@@ -5,7 +5,6 @@ const orbitdb = require('./lib/orbitHandler');
 const fh = require('./lib/fileHandler');
 const eventify = require('./lib/eventify');
 const dirty = require('dirty');
-
 let kvdb;
 let evdb;
 let orb;
@@ -57,6 +56,8 @@ const start = async function start() {
 const main = async function() {
 	try {
 		await start();
+		//test for peers
+		/*
 		setInterval(async() => {
 			let peers = await ipfs.swarm.peers();
 			peers.map((e) => {
@@ -64,20 +65,32 @@ const main = async function() {
 				console.log(String(e.addr));
 			});
 		}, 1000);
+		 */
+
 		watcher.on('addDir', (path) => {
 			console.log(`${path} has been added (dir)`);
 		});
 
 		watcher.on('add', path => addFile(path));
 
-
-		orb.events.on('data', (dbname, event) => {
-			console.log('\n\nORBITDB EVENT');
+		evdb.events.on('data', (dbname, event) => {
+			console.log('\n EVDB EVENT');
 			console.log(dbname, event);
+			console.log(event.payload.value);
+			const value = event.payload.value;
+			switch (value.action) {
+				case 'add':
+					syncAdd(value.files);
+					break;
 
-			console.log('\n\n');
+				default:
+					break;
+			}
+			//check if already exists
+			//if(await fh.fileExists(event.payload.value))
+			console.log();
+			console.log('\n');
 		});
-
 		/*
 		eventify.prmify([{
 			event: orb.events,
@@ -97,7 +110,23 @@ const main = async function() {
 };
 main();
 
-const syncAdd = async function syncAdd(args) {
+const syncAdd = function syncAdd(files) {
+	for (let f of files) {
+		//if the file exists
+		if (fh.exists(f)) {
+			console.log(`${f} already exists`);
+		} else {
+			console.log(`${f} does not exist, syncing to FS`);
+			let val = kvdb.get(f);
+			console.log(`got
+					Hash: ${val.hash} |
+					Path: ${val.path} |
+					Size(bytes): ${val.size}
+					from kv`);
+			let hash = val.hash;
+			getFromIpfs(f, hash);
+		}
+	}
 
 };
 const addFile = async function addFile(path) {
@@ -105,7 +134,7 @@ const addFile = async function addFile(path) {
 	//check if file already exists in kvstore
 	let fileExists = kvdb.get(path);
 
-	if (fileExists && fileExists.isDeleted) {
+	if (fileExists) {
 		console.log(`File ${path} already exists in kvdb or was deleted at a future time, ignoring add`);
 		return;
 	}
@@ -123,7 +152,7 @@ const addFile = async function addFile(path) {
 const addToIpfs = function addToIpfs(path) {
 	let rs = fh.readStream(path);
 	return new Promise((resolve, reject) => {
-		ipfs.files.add(rs, (err, res) => {
+		ipfs.files.add([{path: path, content: rs}], (err, res) => {
 			if (err) {
 				console.log(`Error adding to ipfs ${err}`);
 				return reject(err);
@@ -131,12 +160,26 @@ const addToIpfs = function addToIpfs(path) {
 				//NOTE: callback returns first file added assuming we wont us this
 				//for multiple files at the same time
 				console.log(`File ${path} added to IPFS`);
+				console.log(res);
 				resolve(res[0]);
 			}
 		});
 	});
 };
 
+const getFromIpfs = function getFromIpfs(path, hash) {
+	ipfs.files.cat(hash, (err, stream) => {
+		if (err) {
+			return console.log(`Error retriving ${hash} from IPFS`);
+		} else {
+			let ws = fh.writeStream(path);
+			stream.pipe(ws);
+			ws.on('end', () => {
+				console.log('Writing ${path} finished!');
+			});
+		}
+	});
+};
 
 const addToevdb = async function addToevdb(path) {
 	//get current iteration this user is at

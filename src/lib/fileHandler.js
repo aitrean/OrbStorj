@@ -6,7 +6,7 @@ const chokidar = require('chokidar');
 	IPFS file actions should be in a seperate file
 	Then a third file should combine functionality between the two
 */
-const createMainDir = function createMainDir(path = `${os.homedir()}/OrbStorj`) {
+const createMainDir = function createMainDir(path = orbStorjDir()) {
 	return new Promise((resolve, reject) => {
 		fs.mkdir(path, (err) => {
 			//check if err is that folder already exists
@@ -26,7 +26,8 @@ const createMainDir = function createMainDir(path = `${os.homedir()}/OrbStorj`) 
 	});
 };
 
-const watchMainDir = function watchMainDir(path = `${os.homedir()}/OrbStorj`, ignoreDotFiles = false) {
+
+const watchMainDir = function watchMainDir(path = orbStorjDir(), ignoreDotFiles = false) {
 	let watcher;
 	const awaitWriteFinish = {
 		//20 sec
@@ -36,17 +37,23 @@ const watchMainDir = function watchMainDir(path = `${os.homedir()}/OrbStorj`, ig
 	if (ignoreDotFiles) {
 		watcher = chokidar.watch(path, {
 			ignored: /^(|[\/\\])\../,
+			cwd: path,
 			awaitWriteFinish,
 			ignoreInitial: true
 		});
 	} else {
 		watcher = chokidar.watch(path, {
 			awaitWriteFinish,
+			cwd: path,
 			ignoreInitial: true,
 		});
 	}
 	console.log(`watcher instantiated at ${path}`);
 	return watcher;
+};
+
+const orbStorjDir = () => {
+	return `${os.homedir()}/OrbStorj`;
 };
 
 const watchEvents = function watchEvents(watcher) {
@@ -88,7 +95,7 @@ const readFileAsync = function readFileAsync(fileName) {
  * @return {stream}          [read stream]
  */
 const readFileStream = function readFileStream(filename) {
-	let rs = fs.createReadStream(filename);
+	let rs = fs.createReadStream(`${orbStorjDir()}/${filename}`);
 	return rs;
 };
 /**
@@ -96,8 +103,8 @@ const readFileStream = function readFileStream(filename) {
  * @param  {string} fileName [path to write to]
  * @return {stream}          [write stream]
  */
-const writeFileStream = function writeFileStream(fileName) {
-	let ws = fs.createWriteStream(fileName);
+const writeFileStream = function writeFileStream(filename) {
+	let ws = fs.createWriteStream(`${orbStorjDir()}/${filename}`);
 	return ws;
 };
 
@@ -118,7 +125,14 @@ const writeFileAsync = function writeFileAsync(fileName, data) {
 	});
 };
 
-const moveFiles = function moveFiles(){
+const fileExists = function fileExists(path) {
+	return new Promise((resolve)=> {
+		fs.access(path, (err) => {
+			(err ? resolve(false) : resolve(true));
+		});
+	});
+};
+const moveFiles = function moveFiles() {
 
 };
 const exportObj = {
@@ -130,6 +144,7 @@ const exportObj = {
 	readFile: readFileAsync,
 	writeFile: writeFileAsync,
 	mv: moveFiles,
+	exists: fileExists,
 };
 
 module.exports = exportObj;

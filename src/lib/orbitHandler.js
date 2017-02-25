@@ -15,6 +15,7 @@ const init = (name) => {
 		IpfsDataDir: '/tmp/' + appName,
 		Addresses: {
 			API: '/ip4/127.0.0.1/tcp/0',
+			//NOTE: may need to add users own local/external ip address and port here
 			Swarm: ['/ip4/0.0.0.0/tcp/0'],
 			Gateway: '/ip4/0.0.0.0/tcp/0',
 		},
@@ -34,9 +35,10 @@ const init = (name) => {
 
 
 const initOrb = () => {
- 	orbitdb = new OrbitDB(ipfs, appName);
+	orbitdb = new OrbitDB(ipfs, appName);
 	return orbitdb;
-}
+};
+
 /**
  * Create a DB instance with name and data type
  * @param  {Array} name An array of names
