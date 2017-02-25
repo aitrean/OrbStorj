@@ -77,7 +77,8 @@ const main = async function() {
 			console.log('\n EVDB EVENT');
 			console.log(dbname, event);
 			console.log(event.payload.value);
-			const value = event.payload.value;
+			const value = JSON.parse(event.payload.value);
+			console.log(value.action);
 			switch (value.action) {
 				case 'add':
 					syncAdd(value.files);
