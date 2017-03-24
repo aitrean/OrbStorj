@@ -1,0 +1,34 @@
+{
+  "name": "orbstorj",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aitrean/OrbStorj.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aitrean/OrbStorj/issues"
+  },
+  "homepage": "https://github.com/aitrean/OrbStorj#readme",
+  "devDependencies": {
+    "eslint": "^3.11.0",
+    "eslint-plugin-no-async-without-await": "^1.2.0",
+    "node-libs-browser": "^2.0.0"
+  },
+  "dependencies": {
+    "chokidar": "^1.6.1",
+    "clui": "^0.3.1",
+    "dirty": "^1.1.0",
+    "electron": "^1.4.10",
+    "inquirer-promise": "^1.0.0",
+    "ipfs-daemon": "^0.3.0-beta.3",
+    "orbit-db": "^0.16.0-beta.1",
+    "randomstring": "^1.1.4"
+  }
+}
