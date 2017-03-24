@@ -96,6 +96,7 @@ const main = async function() {
 			console.log(event.payload.value);
 			const value = JSON.parse(event.payload.value);
 			console.log(value.action);
+			console.log("HERE IS THE VALUE: " + value.files);
 			switch (value.action) {
 				case 'add':
 					syncAdd(value.files);
@@ -137,7 +138,7 @@ const syncAdd = async function syncAdd(files) {
 		//if the file exists
 		console.log(kvdb.get(f));
 		console.log(await fh.exists(f));
-		if (f.isDeleted === false && await fh.exists(f)) {
+		if (await fh.exists(f)) {
 			console.log(`${f} already exists`);
 		} else {
 			console.log(`${f} does not exist, syncing to FS`);
@@ -154,10 +155,11 @@ const syncAdd = async function syncAdd(files) {
 
 };
 
-const syncDelete = async function syncDelete(files) {
+const syncDelete = function syncDelete(files) {
 	console.log('Syncing Delete...');
 	for (let f of files) {
-		console.log(kvdb.get(f));
+		console.log("Removing file");
+		fh.remove(f).catch(err => {console.log(err)});
 	}
 };
 
@@ -254,6 +256,6 @@ const addTokvdb = async function addTokvdb(path) {
 const markDeleted = function markDeleted(path) {
 	let deletedFile = JSON.parse(kvdb.get(path));
 	deletedFile.isDeleted = true;
-	kvdb.set(path, deletedFile);
+	kvdb.put(path, JSON.stringify(deletedFile));
 	console.log(deletedFile);
 };
