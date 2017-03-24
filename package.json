@@ -28,6 +28,7 @@
     "electron": "^1.4.10",
     "inquirer-promise": "^1.0.0",
     "ipfs-daemon": "^0.3.0-beta.3",
-    "orbit-db": "^0.16.0-beta.1"
+    "orbit-db": "^0.16.0-beta.1",
+    "randomstring": "^1.1.4"
   }
 }

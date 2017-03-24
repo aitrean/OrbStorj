@@ -133,9 +133,22 @@ const fileExists = function fileExists(path) {
 		});
 	});
 };
-const moveFiles = function moveFiles() {
 
+const removeFile = function removeFile(path) {
+	console.log("PATH IS: " + path);
+	return new Promise((resolve, reject) => {
+		if(fileExists(path)){
+			fs.unlink(`${orbStorjDir()}/${path}`, (err) => {
+			if (err) {
+				return reject(err);
+			}
+			return resolve();
+		});
+		}; 
+		resolve();
+	});
 };
+
 const exportObj = {
 	init: createMainDir,
 	watchRoot: watchMainDir,
@@ -144,7 +157,7 @@ const exportObj = {
 	writeStream: writeFileStream,
 	readFile: readFileAsync,
 	writeFile: writeFileAsync,
-	mv: moveFiles,
+	remove: removeFile,
 	exists: fileExists,
 };
 
